@@ -7,6 +7,14 @@ var height;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 
 function isValid(){
+	for(var j=0; j<6; j++){
+		for(var j=0; j<6; j++){
+			for(var k=0; k<6; k++){
+				if(corner[i][j][k]!=corner[i][k][j])
+					return false;
+			}
+		}
+	}
 	return true;
 }
 
