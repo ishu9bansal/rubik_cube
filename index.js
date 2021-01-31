@@ -1,5 +1,9 @@
 var edge = ndArray(2);
 var corner = ndArray(3);
+var resolution = 50;
+var svg;
+var width;
+var height;
 
 function isValid(){
 	return true;
@@ -53,6 +57,24 @@ function ndArray(k){
 }
 
 function init(){
+	width = window.innerWidth;
+	height = window.innerHeight;
+	resolution = Math.floor(Math.min(width/17,height/13));
+	svg = d3.select("svg").attr("width", resolution*17).attr("height", resolution*13);
+	svg.selectAll(".square").data(map)
+	.enter().append("rect")
+	.attr("class","square")
+	.attr("width", resolution)
+	.attr("height", resolution)
+	.attr("x", function(d) {
+		return resolution*(1+d.j);
+	})
+	.attr("y", function(d) {
+		return resolution*(1+d.i);
+	})
+	.style("stroke", "black")
+	.style("fill","white");
+
 	for(var i=0; i<6; i++){
 		for(var j=0; j<6; j++){
 			edge[i][j] = i;
