@@ -77,6 +77,26 @@ function renderCube(){
 	});
 }
 
+function handleMouseOver(d,i){
+	if(d.k.length==1)
+		d3.select(this)
+		.transition().duration(100)
+		.style("opacity", 0.5);
+}
+
+function handleMouseOut(d,i){
+	if(d.k.length==1)
+		d3.select(this)
+		.transition().duration(100)
+		.style("opacity", 1);
+}
+
+function handleClick(d,i){
+	if(d.k.length==1)
+		rotate(d.k[0]);
+}
+
+
 function init(){
 	width = window.innerWidth;
 	height = window.innerHeight;
@@ -94,7 +114,10 @@ function init(){
 		return resolution*(1+d.i);
 	})
 	.style("stroke", "black")
-	.style("fill","white");
+	.style("fill","white")
+	.on("mouseover", handleMouseOver)
+	.on("mouseout", handleMouseOut)
+	.on("click", handleClick);
 
 	for(var i=0; i<6; i++){
 		for(var j=0; j<6; j++){
