@@ -5,6 +5,7 @@ var svg;
 var width;
 var height;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
+const colour = "BRGOWYbrgowy";
 
 function isValid(){
 	for(var j=0; j<6; j++){
@@ -19,7 +20,6 @@ function isValid(){
 }
 
 function logCube(){
-	colour = "BRGOWY";
 	if(!isValid()){
 		console.log("Invalid Cube");
 		return;
@@ -106,6 +106,7 @@ function init(){
 		}
 	}
 	renderCube();
+	window.onkeypress = handleKeyPress;
 }
 
 init();
@@ -163,4 +164,10 @@ function rotate(n, clockwise = false){
 		changeEdge(n,j,tempEdge);
 		changeCorner([n,j,k],tempCorner);
 	}
+	renderCube();
+}
+
+function handleKeyPress(e){
+	n = colour.indexOf(e.key);
+	if(n!=-1)	rotate(n%6,n/6);
 }
