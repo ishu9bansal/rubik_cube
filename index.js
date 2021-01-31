@@ -78,21 +78,18 @@ function renderCube(){
 }
 
 function handleMouseOver(d,i){
-	if(d.k.length==1)
 		d3.select(this)
 		.transition().duration(100)
 		.style("opacity", 0.5);
 }
 
 function handleMouseOut(d,i){
-	if(d.k.length==1)
 		d3.select(this)
 		.transition().duration(100)
 		.style("opacity", 1);
 }
 
 function handleClick(d,i){
-	if(d.k.length==1)
 		rotate(d.k[0]);
 }
 
@@ -115,6 +112,16 @@ function init(){
 	})
 	.style("stroke", "black")
 	.style("fill","white")
+	.filter(function(d) { return d.k.length==1; })
+	// .append("text").attr("class","middle")
+	// .attr("x", function(d) {
+	// 	return resolution*(1+d.j);
+	// })
+	// .attr("y", function(d) {
+	// 	return resolution*(1+d.i);
+	// })
+	// .attr("fill", "black")
+	// .text(function(d) { return colour[d.k[0]]; })
 	.on("mouseover", handleMouseOver)
 	.on("mouseout", handleMouseOut)
 	.on("click", handleClick);
