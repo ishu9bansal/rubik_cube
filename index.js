@@ -4,6 +4,7 @@ var resolution = 50;
 var svg;
 var width;
 var height;
+const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 
 function isValid(){
 	return true;
@@ -56,6 +57,18 @@ function ndArray(k){
 	return temp;
 }
 
+function renderCube(){
+	svg.selectAll(".square")
+	.transition().duration(250)
+	.style("fill", function(d) {
+		k = 0;
+		if(d.k.length==3)	k = corner[d.k[0]][d.k[1]][d.k[2]];
+		else if(d.k.length==2)	k = edge[d.k[0]][d.k[1]];
+		else	k = d.k[0];
+		return colors[k];
+	});
+}
+
 function init(){
 	width = window.innerWidth;
 	height = window.innerHeight;
@@ -84,7 +97,7 @@ function init(){
 			}
 		}
 	}
-	logCube();
+	renderCube();
 }
 
 init();
