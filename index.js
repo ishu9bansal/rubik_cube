@@ -109,3 +109,58 @@ function init(){
 }
 
 init();
+
+function adjacent(n){
+	v = [0,1,2,3];
+	n = n%6;
+	if(n==5)	return [3,2,1,0];
+	if(n==4)	return v;
+	v[0] = 4;
+	v[1] = (n+3)%4;
+	v[2] = 5;
+	v[3] = (n+1)%4;
+	return v;
+}
+
+function getEdge(i, j){
+	return [edge[i][j],edge[j][i]];
+}
+
+function getCorner(i, j, k){
+	return [corner[i][j][k],corner[j][k][i],corner[k][i][j]];
+}
+
+function changeCorner(index, value){
+	var j;
+	var k;
+	for(var i=0; i<3; i++){
+		j = (i+1)%3;
+		k = (i+2)%3;
+		corner[index[i]][index[j]][index[k]] = value[i];
+		corner[index[i]][index[k]][index[j]] = value[i];
+	}
+}
+
+function changeEdge(i, j, v){
+	edge[i][j] = v[0];
+	edge[j][i] = v[1];
+}
+
+function rotate(n, clockwise = false){
+	a = adjacent(n);
+	if(clockwise){
+		var t = a[1];	a[1] = a[3];	a[3] = t;
+	}
+	var i,j,k;
+	for(var o=0; o<3; o++){
+		i = a[o];
+		j = a[(o+1)%4];
+		k = a[(o+2)%4];
+		var tempEdge = getEdge(n,i);
+		var tempCorner = getCorner(n,i,j);
+		changeEdge(n,i,getEdge(n,j));
+		changeCorner([n,i,j],getCorner(n,j,k));
+		changeEdge(n,j,tempEdge);
+		changeCorner([n,j,k],tempCorner);
+	}
+}
