@@ -6,7 +6,7 @@ var width;
 var height;
 var face;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
-const colour = "BRGOWYbrgowy";
+const colour = "BRGOWYbrgowy0123456789";
 const sides = ["top", "right", "bottom", "left", "front", "back"];
 const cubeOpacity = 0.9;
 
@@ -109,6 +109,7 @@ function init(){
 	.style("opacity", 1);
 	face = [];
 	for(var i = 0; i < 6; i++){
+		d3.select(".cube ."+sides[i]).attr("title", "press "+colour[i]);
 		face.push(d3.select(".cube ."+sides[i]+" .face"));
 		var subdata = map.filter(d => d.k[0] == i);
 		face[i].selectAll(".square")
