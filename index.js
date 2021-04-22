@@ -4,8 +4,11 @@ var resolution = 50;
 var svg;
 var width;
 var height;
+var face;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy";
+const sides = ["top", "right", "bottom", "left", "front", "back"];
+const cubeOpacity = 0.9;
 
 function isValid(){
 	for(var j=0; j<6; j++){
@@ -66,7 +69,7 @@ function ndArray(k){
 }
 
 function renderCube(){
-	svg.selectAll(".square")
+	d3.selectAll(".square")
 	.transition().duration(250)
 	.style("fill", function(d) {
 		k = 0;
@@ -80,51 +83,50 @@ function renderCube(){
 function handleMouseOver(d,i){
 		d3.select(this)
 		.transition().duration(100)
-		.style("opacity", 0.5);
+		.style("opacity", 1);
 }
 
 function handleMouseOut(d,i){
 		d3.select(this)
 		.transition().duration(100)
-		.style("opacity", 1);
+		.style("opacity", cubeOpacity);
 }
 
 function handleClick(d,i){
 		rotate(d.k[0]);
 }
 
+function res(multiplier){
+	return (multiplier*10)+"vh";
+}
 
 function init(){
 	width = window.innerWidth;
 	height = window.innerHeight;
-	resolution = Math.floor(Math.min(width/17,height/13));
-	svg = d3.select("svg").attr("width", resolution*17).attr("height", resolution*13);
-	svg.selectAll(".square").data(map)
-	.enter().append("rect")
-	.attr("class","square")
-	.attr("width", resolution)
-	.attr("height", resolution)
-	.attr("x", function(d) {
-		return resolution*(1+d.j);
-	})
-	.attr("y", function(d) {
-		return resolution*(1+d.i);
-	})
-	.style("stroke", "black")
-	.style("fill","white")
-	.filter(function(d) { return d.k.length==1; })
-	// .append("text").attr("class","middle")
-	// .attr("x", function(d) {
-	// 	return resolution*(1+d.j);
-	// })
-	// .attr("y", function(d) {
-	// 	return resolution*(1+d.i);
-	// })
-	// .attr("fill", "black")
-	// .text(function(d) { return colour[d.k[0]]; })
-	.on("mouseover", handleMouseOver)
-	.on("mouseout", handleMouseOut)
-	.on("click", handleClick);
+	d3.selectAll("svg")
+	.attr("width", res(3))
+	.attr("height", res(3))
+	.style("opacity", 1);
+	face = [];
+	for(var i = 0; i < 6; i++){
+		face.push(d3.select(".cube ."+sides[i]+" .face"));
+		var subdata = map.filter(d => d.k[0] == i);
+		face[i].selectAll(".square")
+		.data(subdata).enter()
+		.append("rect")
+		.attr("class","square")
+		.attr("width", res(1))
+		.attr("height", res(1))
+		.attr("x", d => res(d.j%4))
+		.attr("y", d => res(d.i%4))
+		.style("stroke", "black")
+		.style("fill","white")
+		.style("opacity", cubeOpacity)
+		.filter(d => d.k.length==1)
+		.on("mouseover", handleMouseOver)
+		.on("mouseout", handleMouseOut)
+		.on("click", handleClick);
+	}
 
 	for(var i=0; i<6; i++){
 		for(var j=0; j<6; j++){
