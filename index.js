@@ -5,13 +5,21 @@ var svg;
 var width;
 var height;
 var face;
+const dir = [-1,0,1,0,-1];
+const dirs = [
+	[0,-1,0],
+	[1,0,0],
+	[0,1,0],
+	[-1,0,0]
+];
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy0123456789";
 const sides = ["top", "right", "bottom", "left", "front", "back"];
 const cubeOpacity = 0.9;
-const xA = 0;
-const yA = 0;
-const zA = 0;
+const rotationStepInterval = 50;
+var xA = 0;
+var yA = 0;
+var zA = 0;
 
 function isValid(){
 	for(var j=0; j<6; j++){
@@ -103,27 +111,29 @@ function res(multiplier){
 	return (multiplier*10)+"vh";
 }
 
-function handleAngle(){
-	var x = document.getElementById("xangle").value;
-	var y = document.getElementById("yangle").value;
-	var z = document.getElementById("zangle").value;
-	d3.select(".cube").style("transform", "rotateX("+x+"deg) rotateY("+y+"deg) rotateZ("+z+"deg)")
+function handleAngleChange(){
+	d3.select(".cube").style("transform", "rotateX("+xA+"deg) rotateY("+yA+"deg) rotateZ("+zA+"deg)")
 }
 
 function setAngles(x,y,z){
-	document.getElementById("xangle").value = x;
-	document.getElementById("yangle").value = y;
-	document.getElementById("zangle").value = z;
+	xA = (360+x%360)%360;
+	yA = (360+y%360)%360;
+	zA = (360+z%360)%360;
+	handleAngleChange();
 }
 
-function setAngle(id,angle){
-	var x = document.getElementById("xangle").value;
-	var y = document.getElementById("yangle").value;
-	var z = document.getElementById("zangle").value;
-	if(id=='x')	x = angle;
-	if(id=='y')	y = angle;
-	if(id=='z')	z = angle;
-	setAngles(x,y,z);
+function changeAngles(x,y,z){
+	setAngles(xA+x,yA+y,zA+z);
+}
+
+function startRotating(x,y,z){
+	return setInterval(() => changeAngles(x,y,z), rotationStepInterval);
+}
+
+function handleKeyDown(e){
+	k = e.which-37;
+    if(k<0||k>3)  return;
+    changeAngles(dir[k+1],dir[k],0);
 }
 
 function init(){
@@ -156,7 +166,6 @@ function init(){
 	}
 
 	setAngles(xA,yA,zA);
-	handleAngle();
 
 	for(var i=0; i<6; i++){
 		for(var j=0; j<6; j++){
@@ -169,6 +178,7 @@ function init(){
 	}
 	renderCube();
 	window.onkeypress = handleKeyPress;
+	window.onkeydown = handleKeyDown;
 }
 
 init();
