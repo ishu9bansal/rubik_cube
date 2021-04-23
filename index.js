@@ -9,6 +9,9 @@ const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy0123456789";
 const sides = ["top", "right", "bottom", "left", "front", "back"];
 const cubeOpacity = 0.9;
+const xA = 0;
+const yA = 0;
+const zA = 0;
 
 function isValid(){
 	for(var j=0; j<6; j++){
@@ -100,6 +103,29 @@ function res(multiplier){
 	return (multiplier*10)+"vh";
 }
 
+function handleAngle(){
+	var x = document.getElementById("xangle").value;
+	var y = document.getElementById("yangle").value;
+	var z = document.getElementById("zangle").value;
+	d3.select(".cube").style("transform", "rotateX("+x+"deg) rotateY("+y+"deg) rotateZ("+z+"deg)")
+}
+
+function setAngles(x,y,z){
+	document.getElementById("xangle").value = x;
+	document.getElementById("yangle").value = y;
+	document.getElementById("zangle").value = z;
+}
+
+function setAngle(id,angle){
+	var x = document.getElementById("xangle").value;
+	var y = document.getElementById("yangle").value;
+	var z = document.getElementById("zangle").value;
+	if(id=='x')	x = angle;
+	if(id=='y')	y = angle;
+	if(id=='z')	z = angle;
+	setAngles(x,y,z);
+}
+
 function init(){
 	width = window.innerWidth;
 	height = window.innerHeight;
@@ -128,6 +154,9 @@ function init(){
 		.on("mouseout", handleMouseOut)
 		.on("click", handleClick);
 	}
+
+	setAngles(xA,yA,zA);
+	handleAngle();
 
 	for(var i=0; i<6; i++){
 		for(var j=0; j<6; j++){
