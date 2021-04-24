@@ -6,6 +6,10 @@ var width;
 var height;
 var face;
 const dir = [0,-1,0,1,0];
+const MOUSE2D = [
+	[0,1],
+	[-1,0]
+];
 const DEGPERLEN = 1;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy0123456789";
@@ -120,8 +124,19 @@ function rotateCube(freeze=false){
 	}
 }
 
+function getRotaionAxisVector(x,y){
+	var r = identityMatrix(4);
+	for(var i=0; i<MOUSE2D.length; i++)
+		for(var j=0; j<MOUSE2D[i].length; j++)
+			r[i][j] = MOUSE2D[i][j];
+	r = matMultiply(globalMatrix, r);
+	r = matMultiply(r,transpose([[x,y,0,1]]));
+	return col(r,0);
+}
+
 function onMouseDisplaced(x,y,freeze=false){
-	localMatrix = transformation(y,-x);
+	vec = getRotaionAxisVector(x,y);
+	localMatrix = transformation(...vec);
 	rotateCube(freeze);
 }
 
