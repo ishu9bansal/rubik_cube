@@ -6,20 +6,14 @@ var width;
 var height;
 var face;
 const dir = [-1,0,1,0,-1];
-const dirs = [
-	[0,-1,0],
-	[1,0,0],
-	[0,1,0],
-	[-1,0,0]
-];
+const DEGPERLEN = 1;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy0123456789";
 const sides = ["top", "right", "bottom", "left", "front", "back"];
 const cubeOpacity = 0.9;
 const rotationStepInterval = 50;
-var xA = 0;
-var yA = 0;
-var zA = 0;
+var globalMatrix;
+var localMatrix;
 
 function isValid(){
 	for(var j=0; j<6; j++){
@@ -111,29 +105,29 @@ function res(multiplier){
 	return (multiplier*10)+"vh";
 }
 
-function handleAngleChange(){
-	d3.select(".cube").style("transform", "rotateX("+xA+"deg) rotateY("+yA+"deg) rotateZ("+zA+"deg)")
+function transformation(x,y,z=0){
+	var l = Math.sqrt(x*x+y*y+z*z);
+	return transformationMatrix(x/l,y/l,z/l,DEGPERLEN*l);
 }
 
-function setAngles(x,y,z){
-	xA = (360+x%360)%360;
-	yA = (360+y%360)%360;
-	zA = (360+z%360)%360;
-	handleAngleChange();
+function rotateCube(){
+	var r = matMultiply(localMatrix, globalMatrix);
+	d3.select(".cube").style("transform", "matrix3d("+r.flat().join()+")")
 }
 
-function changeAngles(x,y,z){
-	setAngles(xA+x,yA+y,zA+z);
-}
-
-function startRotating(x,y,z){
-	return setInterval(() => changeAngles(x,y,z), rotationStepInterval);
+function onMouseDisplaced(x,y,freeze=false){
+	localMatrix = transformation(-y,-x);
+	if(freeze){
+		globalMatrix = matMultiply(localMatrix, globalMatrix);
+		localMatrix = identityMatrix(4);
+	}
+	rotateCube();
 }
 
 function handleKeyDown(e){
 	k = e.which-37;
     if(k<0||k>3)  return;
-    changeAngles(dir[k+1],dir[k],0);
+    onMouseDisplaced(dir[k],dir[k+1],true);
 }
 
 function init(){
@@ -165,7 +159,8 @@ function init(){
 		.on("click", handleClick);
 	}
 
-	setAngles(xA,yA,zA);
+	globalMatrix = localMatrix = identityMatrix(4);
+	rotateCube();	// set initial view here
 
 	for(var i=0; i<6; i++){
 		for(var j=0; j<6; j++){
