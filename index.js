@@ -15,10 +15,11 @@ const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy0123456789";
 const sides = ["top", "right", "bottom", "left", "front", "back"];
 const cubeOpacity = 0.9;
-const rotationStepInterval = 50;
+const touchScale = 1/10;
+
 var globalMatrix;
 var localMatrix;
-var mousedownevent;
+var rotatestartevent;
 
 function isValid(){
 	for(var j=0; j<6; j++){
@@ -147,16 +148,33 @@ function handleKeyDown(e){
 }
 
 function handleMouseMove(e){
-	onMouseDisplaced(e.x - mousedownevent.x, e.y - mousedownevent.y);
+	onMouseDisplaced(e.x - rotatestartevent.x, e.y - rotatestartevent.y);
 }
 
 function handleMouseDown(e){
-	mousedownevent = e;
+	rotatestartevent = e;
 	window.onmousemove = handleMouseMove;
 }
 
 function handleMouseUp(e){
 	window.onmousemove = null;
+	rotateCube(true);
+}
+
+function handleTouchMove(e){
+	onMouseDisplaced(
+		touchScale*(e.touches[0].clientX - rotatestartevent.touches[0].clientX),
+		touchScale*(e.touches[0].clientY - rotatestartevent.touches[0].clientY)
+	);
+}
+
+function handleTouchStart(e){
+	rotatestartevent = e;
+	window.ontouchmove = handleTouchMove;
+}
+
+function handleTouchEnd(e){
+	window.ontouchmove = null;
 	rotateCube(true);
 }
 
@@ -206,6 +224,8 @@ function init(){
 	window.onkeydown = handleKeyDown;
 	window.onmousedown = handleMouseDown;
 	window.onmouseup = handleMouseUp;
+	window.ontouchstart = handleTouchStart;
+	window.ontouchend = handleTouchEnd;
 }
 
 init();
