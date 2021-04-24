@@ -5,7 +5,7 @@ var svg;
 var width;
 var height;
 var face;
-const dir = [-1,0,1,0,-1];
+const dir = [0,-1,0,1,0];
 const DEGPERLEN = 1;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy0123456789";
@@ -14,6 +14,7 @@ const cubeOpacity = 0.9;
 const rotationStepInterval = 50;
 var globalMatrix;
 var localMatrix;
+var mousedownevent;
 
 function isValid(){
 	for(var j=0; j<6; j++){
@@ -110,24 +111,38 @@ function transformation(x,y,z=0){
 	return transformationMatrix(x/l,y/l,z/l,DEGPERLEN*l);
 }
 
-function rotateCube(){
+function rotateCube(freeze=false){
 	var r = matMultiply(localMatrix, globalMatrix);
-	d3.select(".cube").style("transform", "matrix3d("+r.flat().join()+")")
+	d3.select(".cube").style("transform", "matrix3d("+r.flat().join()+")");
+	if(freeze){
+		globalMatrix = r;
+		localMatrix = identityMatrix(4);
+	}
 }
 
 function onMouseDisplaced(x,y,freeze=false){
-	localMatrix = transformation(-y,-x);
-	if(freeze){
-		globalMatrix = matMultiply(localMatrix, globalMatrix);
-		localMatrix = identityMatrix(4);
-	}
-	rotateCube();
+	localMatrix = transformation(y,-x);
+	rotateCube(freeze);
 }
 
 function handleKeyDown(e){
 	k = e.which-37;
     if(k<0||k>3)  return;
-    onMouseDisplaced(dir[k],dir[k+1],true);
+    onMouseDisplaced(dir[k+1],dir[k],true);
+}
+
+function handleMouseMove(e){
+	onMouseDisplaced(e.x - mousedownevent.x, e.y - mousedownevent.y);
+}
+
+function handleMouseDown(e){
+	mousedownevent = e;
+	window.onmousemove = handleMouseMove;
+}
+
+function handleMouseUp(e){
+	window.onmousemove = null;
+	rotateCube(true);
 }
 
 function init(){
@@ -174,6 +189,8 @@ function init(){
 	renderCube();
 	window.onkeypress = handleKeyPress;
 	window.onkeydown = handleKeyDown;
+	window.onmousedown = handleMouseDown;
+	window.onmouseup = handleMouseUp;
 }
 
 init();
