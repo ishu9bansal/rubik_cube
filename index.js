@@ -7,9 +7,12 @@ var height;
 var face;
 const dir = [0,-1,0,1,0];
 const MOUSE2D = [
-	[0,1],
-	[-1,0]
+	[0,1,0,0],
+	[-1,0,0,0],
+	[0,0,1,0],
+	[0,0,0,1]
 ];
+const MOUSE_AXIS = [1,0,0];
 const DEGPERLEN = 1;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
 const colour = "BRGOWYbrgowy0123456789";
@@ -125,20 +128,36 @@ function rotateCube(freeze=false){
 	}
 }
 
-function getRotaionAxisVector(x,y){
-	var r = identityMatrix(4);
-	for(var i=0; i<MOUSE2D.length; i++)
-		for(var j=0; j<MOUSE2D[i].length; j++)
-			r[i][j] = MOUSE2D[i][j];
-	r = matMultiply(globalMatrix, r);
-	r = matMultiply(r,transpose([[x,y,0,1]]));
+function getRelativeRotationAxis(x,y){
+	var r = matMultiply(MOUSE2D,transpose([[x,y,0,1]]));
 	return col(r,0);
+}
+
+function getRotaionAxisVector(x,y){
+	var r = getRelativeRotationAxis(x,y);
+	r = matMultiply(globalMatrix,transpose([r]));
+	return col(r,0);
+}
+
+function getTransformationMatrixForAxis(x,y){
+	var r = getRelativeRotationAxis(x,y);
+	return transformationMatrixBySourceTargetVectors(MOUSE_AXIS.slice(0,3), r.slice(0,3));
 }
 
 function onMouseDisplaced(x,y,freeze=false){
 	vec = getRotaionAxisVector(x,y);
 	localMatrix = transformation(...vec);
 	rotateCube(freeze);
+
+	// rotate Axis
+	var r = getTransformationMatrixForAxis(x,y);
+	d3.select(".cube .axis").style("transform", "matrix3d("+r.flat().join()+")")
+}
+
+function axisVisibe(flag){
+	d3.select(".cube .axis")
+	.transition().duration(flag?0:500)
+	.style("opacity", flag?1:1);
 }
 
 function handleKeyDown(e){
@@ -153,11 +172,13 @@ function handleMouseMove(e){
 
 function handleMouseDown(e){
 	rotatestartevent = e;
+	axisVisibe(true);
 	window.onmousemove = handleMouseMove;
 }
 
 function handleMouseUp(e){
 	window.onmousemove = null;
+	axisVisibe(false);
 	rotateCube(true);
 }
 
@@ -170,11 +191,13 @@ function handleTouchMove(e){
 
 function handleTouchStart(e){
 	rotatestartevent = e;
+	axisVisibe(true);
 	window.ontouchmove = handleTouchMove;
 }
 
 function handleTouchEnd(e){
 	window.ontouchmove = null;
+	axisVisibe(false);
 	rotateCube(true);
 }
 
@@ -185,6 +208,17 @@ function init(){
 	.attr("width", res(3))
 	.attr("height", res(3))
 	.style("opacity", 1);
+	var axis_svg = d3.selectAll(".cube .axis svg");
+	axis_svg.selectAll("line")
+	.data([MOUSE_AXIS])
+	.enter().append("line")
+	.attr("x1", res(1.5))
+	.attr("y1", res(1.5))
+	.attr("x2", res(1.5+MOUSE_AXIS[0]))
+	.attr("y2", res(1.5+MOUSE_AXIS[1]))
+	.style("stroke", "black")
+	.style("stroke-width", 3);
+	axisVisibe(false);
 	face = [];
 	for(var i = 0; i < 6; i++){
 		d3.select(".cube ."+sides[i]).attr("title", "press "+colour[i]);

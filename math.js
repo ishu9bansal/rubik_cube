@@ -96,3 +96,28 @@ function transformationMatrix(u,v,w,t,x=0,y=0,z=0){
 	r.push([0,0,0,1]);
 	return r;
 }
+
+function normalize(vec){
+	var l = 0;
+	for(var i=0; i<vec.length; i++)
+		l += vec[i]*vec[i];
+	l = Math.sqrt(l);
+	for(var i=0; i<vec.length; i++)
+		vec[i] /= l;
+	return l;
+}
+
+function crossVector3(vec1, vec2){
+	var r = productMatrix3(...vec1);
+	r = matMultiply(r, transpose([vec2]));
+	return col(r,0);
+}
+
+function transformationMatrixBySourceTargetVectors(srcVec, tarVec){
+	var s = normalize(tarVec)/normalize(srcVec);
+	var c = dotProduct(srcVec,tarVec);
+	var cross = crossVector3(srcVec, tarVec);
+	var r = transformationMatrix(...cross,Math.acos(c)*180/Math.PI);
+	r[3][3] = s;
+	return r;
+}
