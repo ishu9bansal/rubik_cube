@@ -288,5 +288,5 @@ function rotate(n, clockwise = false){
 
 function handleKeyPress(e){
 	n = colour.indexOf(e.key);
-	if(n!=-1)	rotate(n%6,n/6);
+	if(n!=-1)	rotate(n%6,e.shiftKey);
 }
