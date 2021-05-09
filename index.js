@@ -21,6 +21,8 @@ var globalMatrix;
 var localMatrix;
 var rotatestartevent;
 
+var sequence;
+
 function isValid(){
 	for(var j=0; j<6; j++){
 		for(var j=0; j<6; j++){
@@ -142,7 +144,8 @@ function onMouseDisplaced(x,y,freeze=false){
 }
 
 function handleKeyDown(e){
-	k = e.which-37;
+	var k = e.which-37;
+	if(k==-29)	handleBackspace();
     if(k<0||k>3)  return;
     onMouseDisplaced(dir[k+1],dir[k],true);
 }
@@ -219,6 +222,7 @@ function init(){
 			}
 		}
 	}
+	sequence = "";
 	renderCube();
 	window.onkeypress = handleKeyPress;
 	window.onkeydown = handleKeyDown;
@@ -267,6 +271,7 @@ function changeEdge(i, j, v){
 }
 
 function rotate(n, clockwise = false){
+	sequence += colour[(clockwise?0:6)+n];
 	a = adjacent(n);
 	if(clockwise){
 		var t = a[1];	a[1] = a[3];	a[3] = t;
@@ -286,7 +291,16 @@ function rotate(n, clockwise = false){
 	renderCube();
 }
 
+function handleBackspace(){
+	if(!sequence.length)	return;
+	var e = {
+		key: sequence[sequence.length-1]
+	};
+	handleKeyPress(e);
+	sequence = sequence.slice(0,-2);
+}
+
 function handleKeyPress(e){
 	n = colour.indexOf(e.key);
-	if(n!=-1)	rotate(n%6,e.shiftKey);
+	if(n!=-1)	rotate(n%6,n>=6);
 }
