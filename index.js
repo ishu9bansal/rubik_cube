@@ -12,7 +12,11 @@ const MOUSE2D = [
 ];
 const DEGPERLEN = 1;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
-const colour = "BRGOWYbrgowybrfludBRFLUD0123456789"; // standard notation, where f = F' b = B' and so on
+const colour = "brgowyBRGOWYbrfludBRFLUD012345016789";
+// note: numerical values are just for quick access.
+// Dont write logic on it as it doesn't follow the capital inverse relation which alphabets does.
+// however there is structure in the numerical values and its action, as they uniquely point to one of the letters upto inversion.
+// We are able to make injective mapping because color notation and orientation notation share 2 alphabets, namely 'R' and 'B'
 const sides = ["top", "right", "bottom", "left", "front", "back"];
 const cubeOpacity = 0.9;
 const touchScale = 1/10;
@@ -302,5 +306,5 @@ function handleBackspace(){
 
 function handleKeyPress(e){
 	n = colour.indexOf(e.key);
-	if(n!=-1)	rotate(n%6,n>=6);
+	if(n!=-1)	rotate(n%6,n%12<6);
 }
