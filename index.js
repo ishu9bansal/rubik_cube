@@ -12,7 +12,7 @@ const MOUSE2D = [
 ];
 const DEGPERLEN = 1;
 const colors = ["blue", "red", "green", "orange", "white", "yellow"];
-const colour = "BRGOWYbrgowy0123456789";
+const colour = "BRGOWYbrgowybrfludBRFLUD0123456789"; // standard notation, where f = F' b = B' and so on
 const sides = ["top", "right", "bottom", "left", "front", "back"];
 const cubeOpacity = 0.9;
 const touchScale = 1/10;
